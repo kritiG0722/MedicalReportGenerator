@@ -1,0 +1,1586 @@
+//package com.pationImage.com.reg;
+//
+//
+//
+//
+//
+//
+//
+//
+//import java.sql.*;
+//import java.util.ArrayList;
+//import java.util.List;
+//
+//public class connectionDB  {
+//
+//    //  SQL Server DB Configuration
+//    private static final String DB_URL = "jdbc:sqlserver://localhost:1433;databaseName=lab;encrypt=true;trustServerCertificate=true";
+//    private static final String DB_USER = "sa";           // 👉 your SQL Server username
+//    private static final String DB_PASS = "lab@2017"; // 👉 your SQL Server password
+//
+//    // Establish connection
+//    private Connection getConnection() throws SQLException {
+//        // Ensure you have added: mssql-jdbc-x.x.x.jar to your classpath
+//        return DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+//    }
+//
+//   
+//    public static class PatientImage {
+//        public int id;
+//        public String patientId;
+//        public String imageType;
+//        public String imageData;
+//   //     public String recordId;
+//        public Timestamp createdAt;
+//     //   public String mtcode;
+//    }
+//
+//    // ✅ Fetch records from PatientImages table
+//    public List<PatientImage> getPatientImages(String patientId, String fromDate, String toDate) {
+//        List<PatientImage> list = new ArrayList<>();
+//
+//        String sql = "SELECT Id, PatientId , ImageType, ImageData,  CreatedAt " +
+//                     "FROM PatientImages WHERE PatientId = ? AND CreatedAt BETWEEN ? AND ?";
+//        
+//
+////        String sql = "SELECT  PatientId as userID, ImageType as medicalTestName,ImageData as medicalTestResult,  CreatedAt as insertdate from PatientImages"
+////        		+ "union all"
+////        		+ "select userID ,medicalTestName,medicalTestResult,insertdate as CreatedAt from serialportuserparseddata WHERE PatientId = ? AND CreatedAt BETWEEN ? AND ?";
+//        try (Connection con = getConnection();
+//             PreparedStatement ps = con.prepareStatement(sql)) {
+//
+//            ps.setString(1, patientId);
+//            ps.setString(2, fromDate);
+//            ps.setString(3, toDate);
+//
+//            
+//            
+//            ResultSet rs = ps.executeQuery();
+//
+//            while (rs.next()) {
+//                PatientImage img = new PatientImage();
+//                img.id = rs.getInt("Id");
+//                img.patientId = rs.getString("PatientId");
+//                img.imageType = rs.getString("ImageType");
+//                img.imageData = rs.getString("ImageData");
+//             //   img.recordId = rs.getString("RecordId");
+//                img.createdAt = rs.getTimestamp("CreatedAt");
+//           //     img.mtcode = rs.getString("Mtcode");
+//                
+////                img.patientId = rs.getString("userID");
+////                img.imageType = rs.getString("medicalTestName");
+////                img.imageData = rs.getString("medicalTestResult");
+////                img.createdAt = rs.getTimestamp("insertdate");
+//
+//                list.add(img);
+//            }
+//
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
+//
+//        return list;
+//    }
+//
+//   
+//	// ✅ (Optional) Insert new record into PatientImages
+//    public boolean insertPatientImage(String patientId, String imageType, String imageData
+//                                      //String recordId, String mtcode
+//                                      ) {
+//        String sql = "INSERT INTO PatientImages (PatientId as userID, ImageType as medicalTestName, ImageData as medicalTestResult, CreatedAt as insertdate) " +
+//                     "VALUES (?, ?, ?, GETDATE())";
+//
+//        try (Connection con = getConnection();
+//             PreparedStatement ps = con.prepareStatement(sql)) {
+//
+//            ps.setString(1, patientId);
+//            ps.setString(2, imageType);
+//            ps.setString(3, imageData);
+//          //  ps.setString(4, recordId);
+//            //ps.setString(5, mtcode);
+//            
+//            
+//
+//            int rows = ps.executeUpdate();
+//            return rows > 0;
+//
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//            return false;
+//        }
+//    }
+//}
+
+
+
+
+
+
+
+
+----------------------------------------------java registration programs ---------------------------------
+//
+
+
+
+
+
+////////
+////////
+////////
+////////
+////////package com.pationImage.com.reg;
+////////
+////////import javax.swing.*;
+////////import javax.swing.table.DefaultTableModel;
+////////import javax.swing.table.TableCellRenderer;
+////////import javax.swing.DefaultCellEditor;
+////////
+////////import org.jfree.chart.ChartFactory;
+////////import org.jfree.chart.ChartUtils;
+////////import org.jfree.chart.JFreeChart;
+////////
+////////import org.jfree.data.category.DefaultCategoryDataset;
+////////
+////////import java.io.ByteArrayOutputStream;
+////////
+////////
+////////import com.itextpdf.text.*;
+////////import com.itextpdf.text.Font;
+////////import com.itextpdf.text.pdf.PdfWriter;
+////////
+////////
+////////
+////////import com.itextpdf.text.pdf.PdfPTable;
+////////import com.itextpdf.text.pdf.PdfPCell;
+////////import com.itextpdf.text.Rectangle;
+////////
+////////
+////////import com.toedter.calendar.JDateChooser;
+////////
+////////import java.awt.*;
+////////import java.io.File;
+////////import java.io.FileOutputStream;
+////////import java.text.SimpleDateFormat;
+////////import java.util.Base64;
+////////import java.util.List;
+////////
+////////public class registerPage extends JFrame {
+////////
+////////    private JPanel contentPane;
+////////    private JTextField txtPatientId;
+////////    private JTable table;
+////////    private DefaultTableModel tableModel;
+////////    private JDateChooser dateFrom, dateTo;
+////////
+////////    public static void main(String[] args) {
+////////        SwingUtilities.invokeLater(() -> new registerPage().setVisible(true));
+////////    }
+////////
+////////    public registerPage() {
+////////        setTitle("Patient Images Register");
+////////        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+////////        setBounds(100, 100, 1000, 600);
+////////        contentPane = new JPanel();
+////////        contentPane.setLayout(null);
+////////        setContentPane(contentPane);
+////////
+////////        JLabel lblPatientId = new JLabel("PatientId:");
+////////        lblPatientId.setBounds(10, 10, 80, 25);
+////////        contentPane.add(lblPatientId);
+////////
+////////        txtPatientId = new JTextField();
+////////        txtPatientId.setBounds(90, 10, 120, 25);
+////////        contentPane.add(txtPatientId);
+////////
+////////        JLabel lblFrom = new JLabel("From:");
+////////        lblFrom.setBounds(230, 10, 50, 25);
+////////        contentPane.add(lblFrom);
+////////
+////////        dateFrom = new JDateChooser();
+////////        dateFrom.setBounds(280, 10, 120, 25);
+////////        contentPane.add(dateFrom);
+////////
+////////        JLabel lblTo = new JLabel("To:");
+////////        lblTo.setBounds(420, 10, 30, 25);
+////////        contentPane.add(lblTo);
+////////
+////////        dateTo = new JDateChooser();
+////////        dateTo.setBounds(460, 10, 120, 25);
+////////        contentPane.add(dateTo);
+////////
+////////        JButton btnEnter = new JButton("Enter");
+////////        btnEnter.setBounds(600, 10, 100, 25);
+////////        contentPane.add(btnEnter);
+////////
+////////        // Table setup
+////////        String[] columns = { "userid", "ImageType", "ImageData", "insertdate", "Download"};
+////////        tableModel = new DefaultTableModel(columns, 0) {
+////////            public boolean isCellEditable(int row, int column) {
+////////                return column == 4;
+////////            }
+////////        };
+////////
+////////        table = new JTable(tableModel);
+////////        JScrollPane scrollPane = new JScrollPane(table);
+////////        scrollPane.setBounds(10, 60, 960, 480);
+////////        contentPane.add(scrollPane);
+////////
+////////        table.getColumn("Download").setCellRenderer(new ButtonRenderer());
+////////        table.getColumn("Download").setCellEditor(new ButtonEditor());
+////////
+////////        // Load data on button click
+////////        btnEnter.addActionListener(e -> loadData());
+////////    }
+////////
+////////    private void loadData() {
+////////        String patientId = txtPatientId.getText().trim();
+////////        java.util.Date fromDate = dateFrom.getDate();
+////////        java.util.Date toDate = dateTo.getDate();
+////////
+////////        if (patientId.isEmpty() || fromDate == null || toDate == null) {
+////////            JOptionPane.showMessageDialog(this, "Please fill PatientId, From Date, and To Date!");
+////////            return;
+////////        }
+////////
+////////        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+////////        String from = sdf.format(fromDate);
+////////        String to = sdf.format(toDate);
+////////
+////////        // Clear old rows
+////////        tableModel.setRowCount(0);
+////////
+////////        connectionDB dao = new connectionDB();
+////////        List<connectionDB.PatientImage> list = dao.getPatientImages(patientId, from, to);
+////////
+////////        for (connectionDB.PatientImage img : list) {
+////////            tableModel.addRow(new Object[]{
+////////                 //   img.Id, 
+////////            		img.userid,img.medicalTestName,img.machinename,img. medicalTestResult,
+////////            		
+////////               //  img.imageType, img.imageData,   img.recordId,
+////////            		img.insertdate,// img.mtcode
+////////            		 "Download"
+////////            });
+////////        }
+////////
+////////        if (list.isEmpty()) {
+////////            JOptionPane.showMessageDialog(this, "No records found.");
+////////        }
+////////    }
+////////    
+////////    
+////////
+////////
+////////    // Button Renderer
+////////    class ButtonRenderer extends JButton implements TableCellRenderer {
+////////        public ButtonRenderer() {
+////////            setText("Download");
+////////        }
+////////
+////////        public Component getTableCellRendererComponent(JTable table, Object value,
+////////                                                       boolean isSelected, boolean hasFocus, int row, int column) {
+////////            return this;
+////////        }
+////////    }
+////////
+////////    // Button Editor
+////////   class ButtonEditor extends DefaultCellEditor {
+////////        private JButton button;
+////////        private boolean clicked;
+////////        private int row;
+////////		private byte[] base64Data;
+////////
+////////        public ButtonEditor() {
+////////            super(new JCheckBox());
+////////            button = new JButton("Download");
+////////            button.addActionListener(e -> fireEditingStopped());
+////////        }
+////////
+////////        public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+////////            this.row = row;
+////////            clicked = true;
+////////            return button;
+////////        }
+////////
+////////    
+////////    
+////////    
+////////   
+////////    
+////////    
+////////    
+////////    
+////////    
+////////    
+////////    
+////////    
+////////    
+////////    
+////////    
+////////    
+////////    
+////////    
+////////        
+////////        
+////////        
+//////////        //save image within a pdf 
+////////        
+////////        
+//////////        public Object getCellEditorValue() {
+//////////            if (clicked) {
+//////////                try {
+//////////                    // File name for PDF
+//////////                    String fileName = "Patient_" + table.getValueAt(row, 1) + "_Row" + (row + 1) + ".pdf";
+//////////
+//////////                    Document document = new Document();
+//////////                    PdfWriter.getInstance(document, new FileOutputStream(fileName));
+//////////                    document.open();
+//////////
+//////////                    // --- Add patient details ---
+//////////                    document.add(new Paragraph("Patient Image Details"));
+//////////                    document.add(new Paragraph("Id: " + table.getValueAt(row, 0)));
+//////////                    document.add(new Paragraph("PatientId: " + table.getValueAt(row, 1)));
+//////////                    document.add(new Paragraph("ImageType: " + table.getValueAt(row, 2)));
+//////////                    document.add(new Paragraph("RecordId: " + table.getValueAt(row, 4)));
+//////////                    document.add(new Paragraph("CreatedAt: " + table.getValueAt(row, 5)));
+//////////                    document.add(new Paragraph("Mtcode: " + table.getValueAt(row, 6)));
+//////////                    document.add(new Paragraph(" ")); // blank line
+//////////
+//////////                    // --- Decode Base64 image and add to PDF ---
+//////////                    Object imageDataObj = table.getValueAt(row, 3);
+//////////                    if (imageDataObj != null) {
+//////////                        String base64String = imageDataObj.toString();
+//////////                        byte[] imageBytes = Base64.getDecoder().decode(base64String);
+//////////
+//////////                        com.itextpdf.text.Image img = com.itextpdf.text.Image.getInstance(imageBytes);
+//////////                        img.scaleToFit(400, 400); // resize for PDF
+//////////                        img.setAlignment(com.itextpdf.text.Image.ALIGN_CENTER);
+//////////                        document.add(img);
+//////////                    } else {
+//////////                        document.add(new Paragraph("No ImageData available."));
+//////////                    }
+//////////
+//////////                    document.close();
+//////////
+//////////                    JOptionPane.showMessageDialog(null, "PDF saved: " + fileName);
+//////////
+//////////                    // Auto-open PDF
+//////////                    if (Desktop.isDesktopSupported()) {
+//////////                        Desktop.getDesktop().open(new File(fileName));
+//////////                    }
+//////////
+//////////                } catch (Exception ex) {
+//////////                    JOptionPane.showMessageDialog(null, "Error: " + ex.getMessage());
+//////////                    ex.printStackTrace();
+//////////                }
+//////////            }
+//////////            clicked = false;
+//////////            return "Download";
+//////////        }
+//////////      
+////////        
+////////               
+////////        // 3 row information 
+////////        
+//////////        public Object getCellEditorValue() {
+//////////            if (!clicked) return "Download";
+//////////            clicked = false;
+//////////
+//////////            try {
+//////////                // --- PDF file ---
+//////////                String patientId = table.getValueAt(row, 1).toString();
+//////////                String safePatientId = patientId.replaceAll("[^a-zA-Z0-9_-]", "_");
+//////////                String pdfFileName = System.getProperty("user.home") + File.separator + "Patient_" + safePatientId + "_Report.pdf";
+//////////
+//////////                Document document = new Document();
+//////////                PdfWriter.getInstance(document, new FileOutputStream(pdfFileName));
+//////////                document.open();
+//////////
+//////////                document.add(new Paragraph("Patient Report"));
+//////////                document.add(new Paragraph(" "));
+//////////
+//////////                // --- Iterate 3 rows for WBC, RBC, PLT ---
+//////////                for (int i = row; i < row + 3 && i < table.getRowCount(); i++) {
+//////////                  //  document.add(new Paragraph("Row " + (i+1) + " Details:"));
+//////////                   // document.add(new Paragraph("Id: " + table.getValueAt(i, 0)));
+//////////                    document.add(new Paragraph("PatientId: " + table.getValueAt(i, 0)));
+//////////                    document.add(new Paragraph("ImageType: " + table.getValueAt(i, 1)));
+//////////                   // document.add(new Paragraph("RecordId: " + table.getValueAt(i, 4)));
+//////////                    document.add(new Paragraph("CreatedAt: " + table.getValueAt(i, 2)));
+//////////                    //document.add(new Paragraph("Mtcode: " + table.getValueAt(i, 6)));
+//////////                    document.add(new Paragraph(" "));
+//////////                    
+//////////                    // --- Add Base64 image ---
+//////////                    Object imageDataObj = table.getValueAt(i, 2);
+//////////                    if (imageDataObj != null) {
+//////////                        try {
+//////////                            String base64String = imageDataObj.toString().trim();
+//////////                            byte[] imageBytes = Base64.getDecoder().decode(base64String);
+//////////
+//////////                            // Write temporary PNG file
+//////////                            File tmpImg = File.createTempFile("img" + i, ".png");
+//////////                            try (FileOutputStream fos = new FileOutputStream(tmpImg)) {
+//////////                                fos.write(imageBytes);
+//////////                            }
+//////////    
+//////////                            Font headerFont = new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD);
+//////////                            
+//////////                            Paragraph header = new Paragraph("Patient Report");
+//////////                            header.setAlignment(Element.ALIGN_CENTER);
+//////////                            document.add(header);
+//////////                            document.add(new Paragraph(" ")); // blank line
+//////////                            
+//////////                            com.itextpdf.text.Image img = com.itextpdf.text.Image.getInstance(tmpImg.getAbsolutePath());
+//////////                            img.scaleToFit(200, 200);
+//////////                            img.setAlignment(com.itextpdf.text.Image.ALIGN_CENTER);
+//////////                            document.add(new Paragraph(table.getValueAt(i, 3) + " Image:"));
+//////////                            document.add(img);
+//////////                            document.add(new Paragraph(" "));
+//////////
+//////////                            tmpImg.delete(); // cleanup temp file
+//////////
+//////////                        } catch (Exception e) {
+//////////                            document.add(new Paragraph(table.getValueAt(i, 2) + " image could not be decoded."));
+//////////                            document.add(new Paragraph(" "));
+//////////                        }
+//////////                    } else {
+//////////                        document.add(new Paragraph(table.getValueAt(i, 2) + " image not available."));
+//////////                        document.add(new Paragraph(" "));
+//////////                    }
+//////////                }
+//////////
+//////////                document.close();
+//////////
+//////////                JOptionPane.showMessageDialog(null, "PDF saved: " + pdfFileName);
+//////////                if (Desktop.isDesktopSupported()) {
+//////////                    Desktop.getDesktop().open(new File(pdfFileName));
+//////////                }
+//////////
+//////////            } catch (Exception ex) {
+//////////                ex.printStackTrace();
+//////////                JOptionPane.showMessageDialog(null, "Error saving PDF: " + ex.getMessage());
+//////////            }
+//////////
+//////////            return "Download";
+//////////        }
+//////////        
+////////        
+////////        
+////////        
+////////       
+////////        
+////////
+////////
+//////// 
+////////
+////////        
+////////        
+////////        //row and colon  3 row information 
+////////        
+////////        
+////////        
+////////        @Override
+////////        public Object getCellEditorValue() {
+////////            if (!clicked) return "Download";
+////////            clicked = false;
+////////
+////////            try {
+////////                // PDF file name
+////////                String userid = table.getValueAt(row, 0).toString(); // PatientId column
+////////                String safePatientId = userid.replaceAll("[^a-zA-Z0-9_-]", "_");
+////////                String pdfFileName = System.getProperty("user.home")
+////////                        + File.separator + "Patient_" + safePatientId + "_Report.pdf";
+////////
+////////                Document document = new Document();
+////////                PdfWriter.getInstance(document, new FileOutputStream(pdfFileName));
+////////                document.open();
+////////
+////////                // Title and current date
+////////                Font headerFont = new Font(Font.FontFamily.HELVETICA, 16, Font.BOLD, BaseColor.RED);
+////////                Paragraph header = new Paragraph("Patient Report\n", headerFont);
+////////                header.setAlignment(Element.ALIGN_CENTER);
+////////                document.add(header);
+////////                document.add(new Paragraph("Report Date: \n" + new java.util.Date()));
+////////                document.add(new Paragraph(" "));
+////////
+////////                // Loop through rows (WBC, RBC, PLT)
+////////                for (int i = row; i < row + 3 && i < table.getRowCount(); i++) {
+////////
+////////                    // Create table with 2 columns: Details | Image
+////////                    PdfPTable pdfTable = new PdfPTable(2);
+////////                    pdfTable.setWidthPercentage(100);
+////////                    pdfTable.setWidths(new float[]{2, 3}); // 2:3 ratio
+////////
+////////                    // Patient Details cell
+////////                    PdfPCell detailsCell = new PdfPCell();
+////////                    detailsCell.setBorder(Rectangle.NO_BORDER);
+////////                    detailsCell.addElement(new Paragraph("PatientId: " + table.getValueAt(i, 0)));
+////////                    
+////////                    
+////////                    detailsCell.addElement(new Paragraph("ImageType: " + table.getValueAt(i, 1)));
+////////                    detailsCell.addElement(new Paragraph("medicalTestName: "+ table.getValueAt(i, 2)));
+////////                    detailsCell.addElement(new Paragraph("machinename: "+ table.getValueAt(i, 3)));
+////////                    detailsCell.addElement(new Paragraph("medicalTestResult: "+ table.getValueAt(i, 4)));
+////////                    detailsCell.addElement(new Paragraph("insertdate: " + table.getValueAt(i, 5)));
+////////                    pdfTable.addCell(detailsCell);
+////////                    
+////////
+////////                    // Image cell
+////////                    PdfPCell imageCell = new PdfPCell();
+////////                    imageCell.setBorder(Rectangle.NO_BORDER);
+////////
+////////                    Object imageDataObj = table.getValueAt(i, 2); // ImageData column
+////////                    if (imageDataObj != null) {
+////////                        try {
+////////                            String base64String = imageDataObj.toString().trim();
+////////                            if (base64String.startsWith("data")) {
+////////                                base64String = base64String.substring(base64String.indexOf(',') + 1);
+////////                            }
+////////                            base64String = base64String.replaceAll("\\s+", "");
+////////                            byte[] imageBytes = Base64.getDecoder().decode(base64String);
+////////
+////////                            com.itextpdf.text.Image img = com.itextpdf.text.Image.getInstance(imageBytes);
+////////                            img.scaleToFit(200, 200);
+////////                            img.setAlignment(com.itextpdf.text.Image.ALIGN_CENTER);
+////////                            imageCell.addElement(img);
+////////
+////////                        } catch (Exception e) {
+////////                            imageCell.addElement(new Paragraph("Image could not be decoded."));
+////////                        }
+////////                    } else {
+////////                        imageCell.addElement(new Paragraph("No image available."));
+////////                    }
+////////
+////////                    pdfTable.addCell(imageCell);
+////////
+////////                    document.add(pdfTable);
+////////                    document.add(new Paragraph(" ")); // spacing between rows
+////////                }
+////////
+////////                document.close();
+////////
+////////                JOptionPane.showMessageDialog(null, "PDF saved: " + pdfFileName);
+////////
+////////                if (Desktop.isDesktopSupported()) {
+////////                    Desktop.getDesktop().open(new File(pdfFileName));
+////////                }
+////////
+////////            } catch (Exception ex) {
+////////                ex.printStackTrace();
+////////                JOptionPane.showMessageDialog(null, "Error saving PDF: " + ex.getMessage());
+////////            }
+////////
+////////            return "Download";
+////////        }
+////////
+////////        
+////////  
+////////        
+////////        
+////////        
+////////        
+////////    }}
+//////
+//////
+//////
+//////
+//////
+//////
+//////
+//////
+//////
+//////
+//////
+//////
+//////// cretae new file pdf with all data
+//////
+//////
+//////
+//////
+////
+////
+////package com.pationImage.com.reg;
+////
+////import javax.swing.*;
+////import javax.swing.table.DefaultTableModel;
+////import javax.swing.table.TableCellRenderer;
+////import javax.swing.DefaultCellEditor;
+////
+////import com.toedter.calendar.JDateChooser;
+////import com.itextpdf.awt.geom.Rectangle;
+////import com.itextpdf.text.*;
+////import com.itextpdf.text.Font;
+////import com.itextpdf.text.pdf.*;
+////
+////import java.awt.*;
+////import java.io.File;
+////import java.io.FileOutputStream;
+////import java.text.SimpleDateFormat;
+////import java.util.Base64;
+////import java.util.List;
+////
+////public class registerPage extends JFrame {
+////
+////    private JPanel contentPane;
+////    private JTextField txtPatientId;
+////    private JTable table;
+////    private DefaultTableModel tableModel;
+////    private JDateChooser dateFrom, dateTo;
+////
+////    public static void main(String[] args) {
+////        SwingUtilities.invokeLater(() -> new registerPage().setVisible(true));
+////    }
+////
+////    public registerPage() {
+////        setTitle("Patient Images Register");
+////        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+////        setBounds(100, 100, 1000, 600);
+////        contentPane = new JPanel();
+////        contentPane.setLayout(null);
+////        setContentPane(contentPane);
+////
+////        JLabel lblPatientId = new JLabel("PatientId:");
+////        lblPatientId.setBounds(10, 10, 80, 25);
+////        contentPane.add(lblPatientId);
+////
+////        txtPatientId = new JTextField();
+////        txtPatientId.setBounds(90, 10, 120, 25);
+////        contentPane.add(txtPatientId);
+////
+////        JLabel lblFrom = new JLabel("From:");
+////        lblFrom.setBounds(230, 10, 50, 25);
+////        contentPane.add(lblFrom);
+////
+////        dateFrom = new JDateChooser();
+////        dateFrom.setBounds(280, 10, 120, 25);
+////        contentPane.add(dateFrom);
+////
+////        JLabel lblTo = new JLabel("To:");
+////        lblTo.setBounds(420, 10, 30, 25);
+////        contentPane.add(lblTo);
+////
+////        dateTo = new JDateChooser();
+////        dateTo.setBounds(460, 10, 120, 25);
+////        contentPane.add(dateTo);
+////
+////        JButton btnEnter = new JButton("Enter");
+////        btnEnter.setBounds(600, 10, 100, 25);
+////        contentPane.add(btnEnter);
+////
+////        // ✅ Define table columns according to DB fields
+////        String[] columns = {
+////            "userid",
+////            "medicalTestName",
+////            "machinename",
+////            "medicalTestResult",
+////            "insertdate",
+////            "imageData",
+////            "Download"
+////        };
+////
+////        tableModel = new DefaultTableModel(columns, 0) {
+////            public boolean isCellEditable(int row, int column) {
+////                return column == 6; // Only "Download" column is clickable
+////            }
+////        };
+////
+////        table = new JTable(tableModel);
+////        JScrollPane scrollPane = new JScrollPane(table);
+////        scrollPane.setBounds(10, 60, 960, 480);
+////        contentPane.add(scrollPane);
+////
+////        // Set custom button in Download column
+////        table.getColumn("Download").setCellRenderer(new ButtonRenderer());
+////        table.getColumn("Download").setCellEditor(new ButtonEditor());
+////
+////        // Load data on button click
+////        btnEnter.addActionListener(e -> loadData());
+////    }
+////
+////    // ✅ Load data from DB
+////    private void loadData() {
+////        String patientId = txtPatientId.getText().trim();
+////        java.util.Date fromDate = dateFrom.getDate();
+////        java.util.Date toDate = dateTo.getDate();
+////
+////        if (patientId.isEmpty() || fromDate == null || toDate == null) {
+////            JOptionPane.showMessageDialog(this, "Please fill PatientId, From Date, and To Date!");
+////            return;
+////        }
+////
+////        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+////        String from = sdf.format(fromDate);
+////        String to = sdf.format(toDate);
+////
+////        // Clear old rows
+////        tableModel.setRowCount(0);
+////
+////        connectionDB dao = new connectionDB();
+////        List<connectionDB.PatientImage> list = dao.getPatientImages(patientId, from, to);
+////
+////        for (connectionDB.PatientImage img : list) {
+////            tableModel.addRow(new Object[]{
+////                img.userid,
+////                img.medicalTestName,
+////                img.machinename,
+////                img.medicalTestResult,
+////                img.insertdate,
+////                img.imageData,   // Base64 image string
+////                "Download"
+////            });
+////        }
+////
+////        if (list.isEmpty()) {
+////            JOptionPane.showMessageDialog(this, "No records found.");
+////        }
+////    }
+////
+////    // ✅ Renderer for Download Button
+////    class ButtonRenderer extends JButton implements TableCellRenderer {
+////        public ButtonRenderer() {
+////            setText("Download");
+////        }
+////
+////        public Component getTableCellRendererComponent(JTable table, Object value,
+////                                                       boolean isSelected, boolean hasFocus, int row, int column) {
+////            return this;
+////        }
+////    }
+////
+////    // ✅ Button Editor for Download Action
+////    class ButtonEditor extends DefaultCellEditor {
+////        private JButton button;
+////        private boolean clicked;
+////        private int row;
+////
+////        public ButtonEditor() {
+////            super(new JCheckBox());
+////            button = new JButton("Download");
+////            button.addActionListener(e -> fireEditingStopped());
+////        }
+////
+////        public Component getTableCellEditorComponent(JTable table, Object value,
+////                                                     boolean isSelected, int row, int column) {
+////            this.row = row;
+////            clicked = true;
+////            return button;
+////        }
+////
+//////        @Override
+//////        public Object getCellEditorValue() {
+//////            if (!clicked) return "Download";
+//////            clicked = false;
+//////
+//////            try {
+//////                String userid = table.getValueAt(row, 0).toString();
+//////                String safeUserId = userid.replaceAll("[^a-zA-Z0-9_-]", "_");
+//////
+//////                // Save directory
+//////                String saveDir = System.getProperty("user.home") + File.separator + "PatientReports";
+//////                new File(saveDir).mkdirs();
+//////                String pdfFileName = saveDir + File.separator + "Patient_" + safeUserId + "_Report.pdf";
+//////
+//////                Document document = new Document(PageSize.A4, 25, 25, 40, 40);
+//////                PdfWriter.getInstance(document, new FileOutputStream(pdfFileName));
+//////                document.open();
+//////
+//////                // --- Header ---
+//////                Font headerFont = new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD, BaseColor.BLUE);
+//////                Paragraph header = new Paragraph("Patient Blood Report (WBC / RBC / PLT)\n\n", headerFont);
+//////                header.setAlignment(Element.ALIGN_CENTER);
+//////                document.add(header);
+//////
+//////                document.add(new Paragraph("User ID: " + userid));
+//////                document.add(new Paragraph("Report Generated: " + new java.util.Date()));
+//////                document.add(new Paragraph(" "));
+//////
+//////                // --- PDF Table with 2 columns for details and image ---
+//////                PdfPTable pdfTable = new PdfPTable(2);
+//////                pdfTable.setWidthPercentage(100);
+//////                pdfTable.setWidths(new float[]{2.5f, 2.5f});
+//////                pdfTable.setSpacingBefore(10f);
+//////
+//////                // Loop through 3 rows starting from the clicked row
+//////                int rowsToGenerate = Math.min(3, table.getRowCount() - row); // ensure max 3 rows
+//////                for (int i = row; i < row + rowsToGenerate; i++) {
+//////                    // --- Left cell: details ---
+//////                    PdfPCell detailsCell = new PdfPCell();
+//////                    detailsCell.setPadding(10);
+//////                    detailsCell.setBorder(Rectangle.OUT_TOP);
+//////                    detailsCell.addElement(new Paragraph("Medical Test: " + table.getValueAt(i, 1)));
+//////                    detailsCell.addElement(new Paragraph("Machine Name: " + table.getValueAt(i, 2)));
+//////                    detailsCell.addElement(new Paragraph("Test Result: " + table.getValueAt(i, 3)));
+//////                    detailsCell.addElement(new Paragraph("Insert Date: " + table.getValueAt(i, 4)));
+//////                    pdfTable.addCell(detailsCell);
+//////
+//////                    // --- Right cell: image ---
+//////                    PdfPCell imageCell = new PdfPCell();
+//////                    imageCell.setPadding(10);
+//////                    imageCell.setBorder(Rectangle.OUT_TOP);
+//////                    
+//////                    Object imageDataObj = table.getValueAt(row, 5); // your Base64 column
+//////                    PdfPCell imageCell1 = new PdfPCell();
+//////                    imageCell1.setBorder(Rectangle.OUT_TOP);
+//////
+//////                    if (imageDataObj != null && !imageDataObj.toString().trim().isEmpty()) {
+//////                        try {
+//////                            String base64String = imageDataObj.toString().trim();
+//////
+//////                            // Remove prefix if present
+//////                            if (base64String.startsWith("data:image")) {
+//////                                base64String = base64String.substring(base64String.indexOf(',') + 1);
+//////                            }
+//////
+//////                            // Remove whitespace/newlines
+//////                            base64String = base64String.replaceAll("\\s+", "");
+//////
+//////                            // Decode Base64 to byte array
+//////                            byte[] imageBytes = java.util.Base64.getDecoder().decode(base64String);
+//////
+//////                            // Convert to iText image
+//////                            com.itextpdf.text.Image img = com.itextpdf.text.Image.getInstance(imageBytes);
+//////                            img.scaleToFit(200, 200); // adjust size
+//////                            img.setAlignment(com.itextpdf.text.Image.ALIGN_CENTER);
+//////
+//////                            // Add image to cell
+//////                            imageCell1.addElement(img);
+//////
+//////                        } catch (Exception e) {
+//////                            imageCell1.addElement(new Paragraph("Image could not be decoded."));
+//////                            e.printStackTrace();
+//////                        }
+//////                    } else {
+//////                        imageCell1.addElement(new Paragraph("No image available."));
+//////                    }
+//////
+//////                    pdfTable.addCell(imageCell1);
+//////                }
+//////
+//////                document.add(pdfTable);
+//////                document.close();
+//////
+//////                JOptionPane.showMessageDialog(null, "PDF saved at: " + pdfFileName);
+//////                if (Desktop.isDesktopSupported()) {
+//////                    Desktop.getDesktop().open(new File(pdfFileName));
+//////                }
+//////
+//////            } catch (Exception ex) {
+//////                ex.printStackTrace();
+//////                JOptionPane.showMessageDialog(null, "Error saving PDF: " + ex.getMessage());
+//////            }
+//////
+//////            return "Download";
+//////        }
+//////
+////
+////        
+////        
+////        
+////        
+////        
+////        @Override
+////        public Object getCellEditorValue() {
+////            if (!clicked) return "Download";
+////            clicked = false;
+////
+////            try {
+////                String userid = table.getValueAt(row, 0).toString();
+////                String safeUserId = userid.replaceAll("[^a-zA-Z0-9_-]", "_");
+////
+////                // Save directory
+////                String saveDir = System.getProperty("user.home") + File.separator + "PatientReports";
+////                new File(saveDir).mkdirs();
+////                String pdfFileName = saveDir + File.separator + "Patient_" + safeUserId + "_Report.pdf";
+////
+////                Document document = new Document(PageSize.A4, 36, 36, 60, 36);
+////                PdfWriter.getInstance(document, new FileOutputStream(pdfFileName));
+////                document.open();
+////
+////                // --- Header with optional logo ---
+////                try {
+////                    String logoPath = "C:\\path\\to\\your\\logo.png"; // <-- change this
+////                    if (new File(logoPath).exists()) {
+////                        com.itextpdf.text.Image logo = com.itextpdf.text.Image.getInstance(logoPath);
+////                        logo.scaleToFit(70, 70);
+////                        logo.setAlignment(com.itextpdf.text.Image.ALIGN_LEFT);
+////                        document.add(logo);
+////                    }
+////                } catch (Exception e) {
+////                    System.out.println("Logo not found: " + e.getMessage());
+////                }
+////
+////                // --- Title ---
+////                Font titleFont = new Font(Font.FontFamily.HELVETICA, 20, Font.BOLD, BaseColor.BLUE);
+////                Paragraph title = new Paragraph("TechWizard Patient Report\n\n", titleFont);
+////                title.setAlignment(Element.ALIGN_CENTER);
+////                document.add(title);
+////
+////                Font infoFont = new Font(Font.FontFamily.HELVETICA, 12, Font.NORMAL);
+////                document.add(new Paragraph("Patient ID: " + userid, infoFont));
+////                document.add(new Paragraph("Report Generated: " + new java.util.Date(), infoFont));
+////                document.add(new Paragraph("\n"));
+////
+////                // --- Table for each test ---
+////                int rowsToGenerate = Math.min(3, table.getRowCount() - row);
+////                for (int i = row; i < row + rowsToGenerate; i++) {
+////
+////                    PdfPTable sectionTable = new PdfPTable(2);
+////                    sectionTable.setWidthPercentage(100);
+////                    sectionTable.setWidths(new float[]{2.5f, 2.5f});
+////                    sectionTable.setSpacingBefore(15f);
+////
+////                    // Left cell: test info
+////                    PdfPCell infoCell = new PdfPCell();
+////                    infoCell.setPadding(10);
+////
+////                    String testName = String.valueOf(table.getValueAt(i, 1));
+////                    String machine = String.valueOf(table.getValueAt(i, 2));
+////                    String result = String.valueOf(table.getValueAt(i, 3));
+////                    String insertDate = String.valueOf(table.getValueAt(i, 4));
+////
+////                    Paragraph infoPara = new Paragraph();
+////                    infoPara.add(new Phrase("Test Name: " + testName + "\n", infoFont));
+////                    infoPara.add(new Phrase("Machine: " + machine + "\n", infoFont));
+////                    infoPara.add(new Phrase("Result: " + result + "\n", infoFont));
+////                    infoPara.add(new Phrase("Date: " + insertDate + "\n", infoFont));
+////                    infoCell.addElement(infoPara);
+////
+////                    // Right cell: image
+////                    PdfPCell imageCell = new PdfPCell();
+////                    imageCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+////                    imageCell.setPadding(10);
+////
+////                    Object imageDataObj = table.getValueAt(i, 5);
+////                    if (imageDataObj != null && !imageDataObj.toString().trim().isEmpty()) {
+////                        try {
+////                            String base64String = imageDataObj.toString().trim();
+////                            if (base64String.startsWith("data:image")) {
+////                                base64String = base64String.substring(base64String.indexOf(',') + 1);
+////                            }
+////                            base64String = base64String.replaceAll("\\s+", "");
+////
+////                            byte[] imageBytes = Base64.getDecoder().decode(base64String);
+////                            com.itextpdf.text.Image img = com.itextpdf.text.Image.getInstance(imageBytes);
+////                            img.scaleToFit(150, 150);
+////                            img.setAlignment(com.itextpdf.text.Image.ALIGN_CENTER);
+////                            imageCell.addElement(img);
+////                        } catch (Exception e) {
+////                            imageCell.addElement(new Phrase("Invalid Image"));
+////                        }
+////                    } else {
+////                        imageCell.addElement(new Phrase("No Image"));
+////                    }
+////
+////                    // Add both cells to table
+////                    sectionTable.addCell(infoCell);
+////                    sectionTable.addCell(imageCell);
+////
+////                    // Add border and space
+////                    for (PdfPCell cell : sectionTable.getRow(0).getCells()) {
+////                        cell.setBorderWidth(1);
+////                    }
+////
+////                    document.add(sectionTable);
+////                }
+////
+////                // Footer
+////                document.add(new Paragraph("\nReport generated by LifeRelier.",
+////                        new Font(Font.FontFamily.HELVETICA, 10, Font.ITALIC, BaseColor.GRAY)));
+////
+////                document.close();
+////
+////                JOptionPane.showMessageDialog(null, "✅ PDF saved successfully at:\n" + pdfFileName);
+////                if (Desktop.isDesktopSupported()) {
+////                    Desktop.getDesktop().open(new File(pdfFileName));
+////                }
+////
+////            } catch (Exception ex) {
+////                ex.printStackTrace();
+////                JOptionPane.showMessageDialog(null, "❌ Error generating PDF: " + ex.getMessage());
+////            }
+////
+////            return "Download";
+////        }
+////
+////
+////        
+////    }
+////}
+////
+////
+////
+////
+////
+////
+////
+////
+//
+//
+//
+//
+//
+//
+//
+////---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//
+//
+//
+//
+////new code actual report type
+//
+//
+//
+//
+//package com.pationImage.com.reg;
+//
+//
+//
+//import java.awt.*;
+//import java.io.*;
+//import java.sql.*;
+//import java.util.*;
+//import javax.swing.*;
+//import javax.swing.table.*;
+//import com.itextpdf.text.*;
+//import com.itextpdf.text.Font;
+//import com.itextpdf.text.pdf.*;
+//import com.toedter.calendar.JDateChooser;
+//
+//public class registerPage extends JFrame {
+//
+//    private JTextField txtUserId;
+//    private JDateChooser fromDateChooser, toDateChooser;
+//    private JButton btnFetch, btnDownloadAll;
+//    private JTable table;
+//    private DefaultTableModel model;
+//
+//    public registerPage() {
+//        setTitle("Patient Report Generator");
+//        setSize(1100, 550);
+//        setDefaultCloseOperation(EXIT_ON_CLOSE);
+//        setLocationRelativeTo(null);
+//
+//        // Top Panel
+//        JPanel inputPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+//        inputPanel.add(new JLabel("User ID:"));
+//        txtUserId = new JTextField(10);
+//        inputPanel.add(txtUserId);
+//
+//        inputPanel.add(new JLabel("From Date:"));
+//        fromDateChooser = new JDateChooser();
+//        fromDateChooser.setDateFormatString("yyyy-MM-dd");
+//        inputPanel.add(fromDateChooser);
+//
+//        inputPanel.add(new JLabel("To Date:"));
+//        toDateChooser = new JDateChooser();
+//        toDateChooser.setDateFormatString("yyyy-MM-dd");
+//        inputPanel.add(toDateChooser);
+//
+//        btnFetch = new JButton("Fetch Data");
+//        btnDownloadAll = new JButton("Download All PDF");
+//        inputPanel.add(btnFetch);
+//        inputPanel.add(btnDownloadAll);
+//
+//        add(inputPanel, BorderLayout.NORTH);
+//
+//        // Table
+//        model = new DefaultTableModel(new String[]{
+//                "UserID", "Test Name", "Machine", "Result", "Date", "Base64 Image", "Download PDF"
+//        }, 0);
+//
+//        table = new JTable(model) {
+//            public boolean isCellEditable(int row, int column) {
+//                return column == 6; // Only Download PDF column editable
+//            }
+//        };
+//        table.setRowHeight(30);
+//        add(new JScrollPane(table), BorderLayout.CENTER);
+//
+//        // Button actions
+//        btnFetch.addActionListener(e -> fetchData());
+//        btnDownloadAll.addActionListener(e -> generateAllPDF());
+//
+//        // Individual download button in table
+//        table.getColumn("Download PDF").setCellRenderer(new ButtonRenderer());
+//        table.getColumn("Download PDF").setCellEditor(new ButtonEditor(new JCheckBox()));
+//    }
+//
+//    private void fetchData() {
+//        String userId = txtUserId.getText().trim();
+//        java.util.Date fromDate = fromDateChooser.getDate();
+//        java.util.Date toDate = toDateChooser.getDate();
+//
+//        if (userId.isEmpty()) {
+//            JOptionPane.showMessageDialog(this, "Please enter User ID!");
+//            return;
+//        }
+//
+//        model.setRowCount(0); // clear table
+//
+//        String DB_URL = "jdbc:sqlserver://localhost:1433;databaseName=lab;encrypt=true;trustServerCertificate=true";
+//        String DB_USER = "sa";
+//        String DB_PASS = "lab@2017"; // change accordingly
+//
+//        try (Connection con = DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+//             CallableStatement cs = con.prepareCall("{call GetUserMedicalDataGrouped(?, ?, ?)}")) {
+//
+//            cs.setString(1, userId);
+//            if (fromDate == null) cs.setNull(2, Types.DATE);
+//            else cs.setDate(2, new java.sql.Date(fromDate.getTime()));
+//            if (toDate == null) cs.setNull(3, Types.DATE);
+//            else cs.setDate(3, new java.sql.Date(toDate.getTime()));
+//
+//            ResultSet rs = cs.executeQuery();
+//            while (rs.next()) {
+//                model.addRow(new Object[]{
+//                        rs.getString("userid"),
+//                        rs.getString("medicalTestName"),
+//                        rs.getString("machinename"),
+//                        rs.getString("medicalTestResult"),
+//                        rs.getString("insertdate"),
+//                        rs.getString("imageData"),
+//                        "Download"
+//                });
+//            }
+//
+//            JOptionPane.showMessageDialog(this, "✅ Data fetched successfully!");
+//
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//            JOptionPane.showMessageDialog(this, "Error fetching data: " + ex.getMessage());
+//        }
+//    }
+//
+//    // Generate individual PDF for a row
+//    private void generatePDFForRow(int row) {
+//        try {
+//            String userId = Objects.toString(model.getValueAt(row, 0), "");
+//            String safeUserId = userId.replaceAll("[^a-zA-Z0-9_-]", "_");
+//
+//            String saveDir = System.getProperty("user.home") + File.separator + "PatientReports";
+//            new File(saveDir).mkdirs();
+//            String pdfFileName = saveDir + File.separator + "Patient_" + safeUserId + "_Test_" + (row+1) + ".pdf";
+//
+//            Document document = new Document(PageSize.A4, 36, 36, 60, 36);
+//            PdfWriter.getInstance(document, new FileOutputStream(pdfFileName));
+//            document.open();
+//
+//            Font titleFont = new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD, BaseColor.BLUE);
+//            Paragraph title = new Paragraph("Patient Medical Test Report\n\n", titleFont);
+//            title.setAlignment(Element.ALIGN_CENTER);
+//            document.add(title);
+//
+//            Font infoFont = new Font(Font.FontFamily.HELVETICA, 12, Font.NORMAL);
+//            document.add(new Paragraph("Patient ID: " + userId, infoFont));
+//            document.add(new Paragraph("Report Date: " + new java.util.Date(), infoFont));
+//            document.add(new Paragraph("\n-----------------------------------------------\n\n"));
+//
+//            PdfPTable pdfTable = new PdfPTable(2);
+//            pdfTable.setWidthPercentage(100);
+//            pdfTable.setWidths(new float[]{3f, 3f});
+//
+//            String test = Objects.toString(model.getValueAt(row, 1), "");
+//            String machine = Objects.toString(model.getValueAt(row, 2), "");
+//            String result = Objects.toString(model.getValueAt(row, 3), "");
+//            String date = Objects.toString(model.getValueAt(row, 4), "");
+//            String base64 = Objects.toString(model.getValueAt(row, 5), "");
+//
+//            // Left cell: text
+//            PdfPCell textCell = new PdfPCell(new Paragraph(
+//                    "Test Name: " + test + "\n" +
+//                            "Machine: " + machine + "\n" +
+//                            "Result: " + result + "\n" +
+//                            "Date: " + date + "\n", infoFont));
+//            textCell.setPadding(10);
+//            pdfTable.addCell(textCell);
+//
+//            // Right cell: image
+//            PdfPCell imgCell = new PdfPCell();
+//            imgCell.setPadding(8);
+//            imgCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+//            if (!base64.isEmpty()) {
+//                try {
+//                    if (base64.startsWith("data:image"))
+//                        base64 = base64.substring(base64.indexOf(',') + 1);
+//                    byte[] bytes = Base64.getDecoder().decode(base64);
+//                    com.itextpdf.text.Image img = com.itextpdf.text.Image.getInstance(bytes);
+//                    img.scaleToFit(200, 150);
+//                    imgCell.addElement(img);
+//                } catch (Exception e) {
+//                    imgCell.addElement(new Phrase("Invalid Image"));
+//                }
+//            } else {
+//                imgCell.addElement(new Phrase("No Image"));
+//            }
+//            pdfTable.addCell(imgCell);
+//
+//            document.add(pdfTable);
+//          document.add(new Paragraph("\nReport generated by Life Relier ",
+//                    new Font(Font.FontFamily.HELVETICA, 10, Font.ITALIC, BaseColor.GRAY)));
+//
+//            document.close();
+//            Desktop.getDesktop().open(new File(pdfFileName));
+//
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//            JOptionPane.showMessageDialog(this, "Error generating PDF: " + ex.getMessage());
+//        }
+//    }
+//
+//    // Generate all tests in one PDF
+//    private void generateAllPDF() {
+//        if (model.getRowCount() == 0) {
+//            JOptionPane.showMessageDialog(this, "No data to generate PDF!");
+//            return;
+//        }
+//
+//        try {
+//            String userId = Objects.toString(model.getValueAt(0, 0), "");
+//            String safeUserId = userId.replaceAll("[^a-zA-Z0-9_-]", "_");
+//
+//            String saveDir = System.getProperty("user.home") + File.separator + "PatientReports";
+//            new File(saveDir).mkdirs();
+//            String pdfFileName = saveDir + File.separator + "Patient_" + safeUserId + "_AllTests_Report.pdf";
+//
+//            Document document = new Document(PageSize.A4, 36, 36, 60, 36);
+//            PdfWriter.getInstance(document, new FileOutputStream(pdfFileName));
+//            document.open();
+//
+//            Font titleFont = new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD, BaseColor.BLUE);
+//            Paragraph title = new Paragraph("Patient Medical Test Report\n\n", titleFont);
+//            title.setAlignment(Element.ALIGN_CENTER);
+//            document.add(title);
+//
+//            Font infoFont = new Font(Font.FontFamily.HELVETICA, 12, Font.NORMAL);
+//            document.add(new Paragraph("Patient ID: " + userId, infoFont));
+//            document.add(new Paragraph("Report Date: " + new java.util.Date(), infoFont));
+//            document.add(new Paragraph("\n-----------------------------------------------\n\n"));
+//
+//            PdfPTable pdfTable = new PdfPTable(2);
+//            pdfTable.setWidthPercentage(100);
+//            pdfTable.setWidths(new float[]{3f, 3f});
+//
+//            for (int i = 0; i < 3; i++) {
+//                String test = Objects.toString(model.getValueAt(i, 1), "");
+//                String machine = Objects.toString(model.getValueAt(i, 2), "");
+//                String result = Objects.toString(model.getValueAt(i, 3), "");
+//                String date = Objects.toString(model.getValueAt(i, 4), "");
+//                String base64 = Objects.toString(model.getValueAt(i, 5), "");
+//
+//                PdfPCell textCell = new PdfPCell(new Paragraph(
+//                        "Test Name: " + test + "\n" +
+//                                "Machine: " + machine + "\n" +
+//                                "Result: " + result + "\n" +
+//                                "Date: " + date + "\n", infoFont));
+//                textCell.setPadding(10);
+//                pdfTable.addCell(textCell);
+//
+//                PdfPCell imgCell = new PdfPCell();
+//                imgCell.setPadding(8);
+//                imgCell.setHorizontalAlignment(Element.ALIGN_CENTER);
+//                if (!base64.isEmpty()) {
+//                    try {
+//                        if (base64.startsWith("data:image"))
+//                            base64 = base64.substring(base64.indexOf(',') + 1);
+//                        byte[] bytes = Base64.getDecoder().decode(base64);
+//                        com.itextpdf.text.Image img = com.itextpdf.text.Image.getInstance(bytes);
+//                        img.scaleToFit(200, 150);
+//                        imgCell.addElement(img);
+//                    } catch (Exception e) {
+//                        imgCell.addElement(new Phrase("Invalid Image"));
+//                    }
+//                } else {
+//                    imgCell.addElement(new Phrase("No Image"));
+//                }
+//                pdfTable.addCell(imgCell);
+//            }
+//
+//            document.add(pdfTable);
+//            document.add(new Paragraph("\nReport generated by Life Relier",
+//                    new Font(Font.FontFamily.HELVETICA, 10, Font.ITALIC, BaseColor.GRAY)));
+//
+//            document.close();
+//            Desktop.getDesktop().open(new File(pdfFileName));
+//            JOptionPane.showMessageDialog(this, "PDF generated at:\n" + pdfFileName);
+//
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//            JOptionPane.showMessageDialog(this, "Error generating PDF: " + ex.getMessage());
+//        }
+//    }
+//
+//    // Table button renderer/editor
+//    class ButtonRenderer extends JButton implements TableCellRenderer {
+//        public ButtonRenderer() { setOpaque(true); }
+//        public Component getTableCellRendererComponent(JTable table, Object value,
+//                                                       boolean isSelected, boolean hasFocus,
+//                                                       int row, int column) {
+//            setText((value == null) ? "Download" : value.toString());
+//            return this;
+//        }
+//    }
+//
+//    class ButtonEditor extends DefaultCellEditor {
+//        protected JButton button;
+//        private int row;
+//
+//        public ButtonEditor(JCheckBox checkBox) {
+//            super(checkBox);
+//            button = new JButton();
+//            button.setOpaque(true);
+//            button.addActionListener(e -> fireEditingStopped());
+//        }
+//
+//        public Component getTableCellEditorComponent(JTable table, Object value,
+//                                                     boolean isSelected, int row, int column) {
+//            this.row = row;
+//            button.setText((value == null) ? "Download" : value.toString());
+//            return button;
+//        }
+//
+//        public Object getCellEditorValue() {
+//            SwingUtilities.invokeLater(() -> generatePDFForRow(row));
+//            return "Download";
+//        }
+//    }
+//
+//    public static void main(String[] args) {
+//        SwingUtilities.invokeLater(() -> new registerPage().setVisible(true));
+//    }
+//}
+
+
+
+
+
+
+
+
+----------------------------DATABASE CONNECTIONS ----------------------------------------------------
+
+
+
+
+
+
+
+
+  //package com.pationImage.com.reg;
+//
+//import java.sql.*;
+//import java.util.ArrayList;
+//import java.util.List;
+//
+//public class connectionDB {
+//
+//    // SQL Server DB Configuration
+//    private static final String DB_URL = "jdbc:sqlserver://localhost:1433;databaseName=lab;encrypt=true;trustServerCertificate=true";
+//    private static final String DB_USER = "sa";          
+//    private static final String DB_PASS = "lab@2017";    
+//
+//    // Establish connection
+//    private Connection getConnection() throws SQLException {
+//        // Ensure mssql-jdbc-x.x.x.jar is in classpath
+//        return DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+//    }
+//
+//    // --- PatientImage DTO ---
+//    public static class PatientImage {
+//       // public int id;
+//        public String userid;
+//        public String medicalTestName;
+//        public String machinename;
+//        public String medicalTestResult;
+//        public String imageType;
+//        
+//        public String imageData;
+//        public Timestamp insertdate;
+//		//public Object imageData;
+//    }
+//
+//    // --- Fetch Patient Images ---
+//    public List<PatientImage> getPatientImages(String userid, String fromDate, String toDate) {
+//        List<PatientImage> list = new ArrayList<>();
+//       // String sql = "SELECT Id, PatientId, ImageType, ImageData, CreatedAt " +
+//                //     "FROM PatientImages WHERE PatientId = ? AND CreatedAt BETWEEN ? AND ?";
+//        
+//        String sql = "{CALL GetUserMedicalDataGrouped(?, ?, ? )}"; // Stored procedure
+//        Connection connection = null;
+//       
+//        //Connection con = getConnection();
+//
+//      try (  Connection con = getConnection())
+//           //  PreparedStatement ps = con.prepareStatement(sql)) 
+//    		 
+//    		  { CallableStatement ps= con.prepareCall(sql);
+// 
+//            ps.setString(1, userid);
+//         //   ps.setString(2, fromDate);
+//           // ps.setString(3, toDate);
+//            
+//            ps.setDate(2, fromDate != null ? java.sql.Date.valueOf(fromDate) : null);
+//            ps.setDate(3, toDate != null ? java.sql.Date.valueOf(toDate) : null);
+//
+//
+//            ResultSet rs = ps.executeQuery();
+//            while (rs.next()) {
+//                PatientImage img = new PatientImage();
+//              //  img.id = rs.getInt("Id");
+//                img.userid = rs.getString("userid");
+//                img.imageType = rs.getString("ImageType");
+//                img.medicalTestName =rs.getString("medicalTestName");
+//                img.machinename =rs.getString("machinename");
+//                img.medicalTestResult=rs.getString("medicalTestResult");
+//               //img.imageType = rs.getString("ImageType");
+//                //img.imageData = rs.getString("ImageData");
+//                img.insertdate = rs.getTimestamp("insertdate");
+//                list.add(img);
+//            }
+//
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
+//
+//        return list;
+//    }
+//
+//    // --- Insert Patient Image ---
+//    public boolean insertPatientImage(String userid,String medicalTestName,String machinename,String medicalTestResult,/* String imageType, String imageData ,*/Timestamp insertdate) {
+//    //    String sql = "INSERT INTO PatientImages (PatientId, ImageType, ImageData, CreatedAt) " +
+//      //               "VALUES (?, ?, ?, GETDATE())";
+//    	
+//    	
+//    	String sql = "{CALL GetUserMedicalDataGrouped(? ,? ,? ,? , ?,  GETDATE() )}"; // Stored procedure
+//        Connection conn = null;
+//        
+//       
+//
+//        try (Connection con = getConnection();)
+//           //  PreparedStatement ps = con.prepareStatement(sql)) 
+//        		
+//  
+//
+//        		{
+//              		CallableStatement ps= con.prepareCall(sql);
+//            ps.setString(1, userid);
+//            ps.setString(2,medicalTestName );
+//            ps.setString(3,machinename);
+//            ps.setString(4, medicalTestResult );
+//         //------------------------------------------------------------------------
+//		 // ps.setString(5, imageType);
+//        // ps.setString(6, imageData);
+//           
+//            int rows = ps.executeUpdate();
+//            return rows > 0;
+//
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//            return false;
+//        }
+//    }
+//}
+//
+
+
+
+
+// new procedure//
+
+
+
+//
+//package com.pationImage.com.reg;
+//
+//import java.sql.*;
+//import java.util.ArrayList;
+//import java.util.List;
+//
+//public class connectionDB {
+//
+//    // ✅ SQL Server Configuration
+//    private static final String DB_URL = "jdbc:sqlserver://localhost:1433;databaseName=lab;encrypt=true;trustServerCertificate=true";
+//    private static final String DB_USER = "sa";
+//    private static final String DB_PASS = "lab@2017";
+//
+//    // ✅ Establish connection
+//    private Connection getConnection() throws SQLException {
+//        return DriverManager.getConnection(DB_URL, DB_USER, DB_PASS);
+//    }
+//
+//    // ✅ Data Transfer Object (DTO)
+//    public static class PatientImage {
+//        public int id;
+//        public String patientId;
+//        public String machineName;       // maps to ImageType
+//        public String medicalTestName;
+//        public String medicalTestResult;
+//        public String imageData;
+//        public Timestamp createdAt;
+//    }
+//
+//    // ✅ Fetch data from stored procedure Graph_test_info
+//    public List<PatientImage> getPatientImages(String userId, String fromDate, String toDate) {
+//        List<PatientImage> list = new ArrayList<>();
+//        String sql = "{CALL Graph_test_info(?, ?, ?)}";
+//
+//        try (Connection con = getConnection();
+//             CallableStatement cs = con.prepareCall(sql)) {
+//
+//            // Set parameters
+//            cs.setString(1, userId);
+//            cs.setDate(2, (fromDate != null && !fromDate.isEmpty()) ? java.sql.Date.valueOf(fromDate) : null);
+//            cs.setDate(3, (toDate != null && !toDate.isEmpty()) ? java.sql.Date.valueOf(toDate) : null);
+//
+//            ResultSet rs = cs.executeQuery();
+//            while (rs.next()) {
+//                PatientImage img = new PatientImage();
+//                img.id = rs.getInt("Id");
+//                img.patientId = rs.getString("PatientId");
+//                img.machineName = rs.getString("ImageType");       // maps to machine column
+//                img.imageData = rs.getString("ImageData");
+//                
+//                img.medicalTestName = rs.getString("medicalTestName");
+//                img.medicalTestResult = rs.getString("medicalTestResult");
+//       
+//                img.createdAt = rs.getTimestamp("CreateDate");      // from stored procedure alias
+//                list.add(img);
+//            }
+//
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
+//
+//        return list;
+//    
+//
+//    // ✅ Insert (Optional)
+////    public boolean insertPatientImage(String patientId, String machineName, String medicalTestName,
+////                                      String medicalTestResult, String imageData) {
+////        // For now — use your own insert logic or another stored procedure if needed.
+////        String sql = "INSERT INTO PatientImages (PatientId, ImageType, ImageData, CreatedAt) VALUES (?, ?, ?, GETDATE())";
+////
+////        try (Connection con = getConnection();
+////             PreparedStatement ps = con.prepareStatement(sql)) {
+////
+////            ps.setString(1, patientId);
+////            ps.setString(2, machineName);
+////            ps.setString(3, imageData);
+////
+////            int rows = ps.executeUpdate();
+////            return rows > 0;
+////
+////        } catch (Exception ex) {
+////            ex.printStackTrace();
+// //           return false;
+// //       }
+//    }
+//}
+//
+
+
+
+
+
+
+
